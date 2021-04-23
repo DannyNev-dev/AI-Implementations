@@ -1,6 +1,4 @@
-
-package gp1;
-
+package part1;
 import java.util.Arrays;
 
 public class NeuralNetwork {
@@ -23,28 +21,30 @@ public class NeuralNetwork {
         this.learning_rate = learning_rate;
     }
 
-
-    //Calculate neuron activation for an input
-    public double sigmoid(double input) {
-        double output = Double.NaN; //TODO!
-        return output;
+        //Calculate neuron activation for an input
+    public double sigmoid(double input) { 
+        double ePowZ = Math.exp(-input);
+        return 1/(1+ePowZ);
     }
 
     //Feed forward pass input to a network output
     public double[][] forward_pass(double[] inputs) {
         double[] hidden_layer_outputs = new double[num_hidden];
         for (int i = 0; i < num_hidden; i++) {
-            // TODO! Calculate the weighted sum, and then compute the final output.
-            double weighted_sum = 0;
-            double output = 0;
+            double weighted_sum = 0.0;
+            for(int j = 0;j < this.num_inputs;j++) {
+            	weighted_sum+=this.hidden_layer_weights[j][i]*inputs[j];
+            }
+            double output = sigmoid(weighted_sum);
             hidden_layer_outputs[i] = output;
         }
-
         double[] output_layer_outputs = new double[num_outputs];
         for (int i = 0; i < num_outputs; i++) {
-            // TODO! Calculate the weighted sum, and then compute the final output.
             double weighted_sum = 0;
-            double output = 0;
+            for(int j = 0;j < this.num_hidden;j++) {
+            	weighted_sum+=this.output_layer_weights[j][i]*hidden_layer_outputs[j];
+            }
+            double output = sigmoid(weighted_sum);
             output_layer_outputs[i] = output;
         }
         return new double[][]{hidden_layer_outputs, output_layer_outputs};
@@ -86,7 +86,7 @@ public class NeuralNetwork {
                 double[] instance = instances[i];
                 double[][] outputs = forward_pass(instance);
                 double[][][] delta_weights = backward_propagate_error(instance, outputs[0], outputs[1], desired_outputs[i]);
-                int predicted_class = -1; // TODO!
+                int predicted_class = -1; //classes (0,1,2)
                 predictions[i] = predicted_class;
 
                 //We use online learning, i.e. update the weights after every instance.
@@ -108,7 +108,16 @@ public class NeuralNetwork {
         for (int i = 0; i < instances.length; i++) {
             double[] instance = instances[i];
             double[][] outputs = forward_pass(instance);
-            int predicted_class = -1;  // TODO !Should be 0, 1, or 2.
+            double max = Double.NEGATIVE_INFINITY;
+            int predicted_class = -1;
+            //Finds the max output node output and saves the index to be used to classify
+            for(int j = 0;j<outputs[1].length;j++) {
+            	System.out.println(outputs[1][j]);
+            	if(outputs[1][j]>max) {
+            		predicted_class = j;
+            		max = outputs[1][j];
+            	}
+            }
             predictions[i] = predicted_class;
         }
         return predictions;

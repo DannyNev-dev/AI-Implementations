@@ -1,4 +1,4 @@
-package gp1;
+package part1;
 
 import java.util.*;
 
