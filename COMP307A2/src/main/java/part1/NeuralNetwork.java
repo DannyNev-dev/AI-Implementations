@@ -1,5 +1,4 @@
 package part1;
-import java.util.Arrays;
 
 /**
  * @author danma
