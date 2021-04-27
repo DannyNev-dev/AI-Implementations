@@ -70,7 +70,6 @@ public class NeuralNetwork {
      */
     public double[][][] backward_propagate_error(double[] inputs, double[] hidden_layer_outputs,
                                                  double[] output_layer_outputs, int desired_outputs) {
-    	
         double[] output_layer_betas = new double[num_outputs];
         for(int i = 0; i<num_outputs;i++) {
         	if(i==desired_outputs) {
@@ -79,8 +78,6 @@ public class NeuralNetwork {
         		output_layer_betas[i] = 0-output_layer_outputs[i];
         	}
         }
-      //  System.out.println("OL betas: " + Arrays.toString(output_layer_betas));
-        
         double[] hidden_layer_betas = new double[num_hidden];
         for(int i = 0;i<num_hidden;i++) {
         	double beta = 0.0;
@@ -89,22 +86,18 @@ public class NeuralNetwork {
         	}
         	hidden_layer_betas[i] = beta;
         }
-      //  System.out.println("HL betas: " + Arrays.toString(hidden_layer_betas));
-       
         double[][] delta_output_layer_weights = new double[num_hidden][num_outputs];
         for(int i = 0;i<num_hidden;i++) {
         	for(int j = 0;j<num_outputs;j++) {
         		delta_output_layer_weights[i][j] = this.learning_rate*hidden_layer_outputs[i]*output_layer_outputs[j]*(1 - output_layer_outputs[j])*output_layer_betas[j];
         	}
         }
-      
         double[][] delta_hidden_layer_weights = new double[num_inputs][num_hidden];
         for(int i = 0;i<num_inputs;i++) {
         	for(int j = 0;j<num_hidden;j++) {
         		delta_hidden_layer_weights[i][j] = this.learning_rate*inputs[i]*hidden_layer_outputs[j]*(1 - hidden_layer_outputs[j])*hidden_layer_betas[j];
         	}
         }
-
         return new double[][][]{delta_output_layer_weights, delta_hidden_layer_weights};
     }
     /**
@@ -140,25 +133,27 @@ public class NeuralNetwork {
                 double[][] outputs = forward_pass(instance);
                 double[][][] delta_weights = backward_propagate_error(instance, outputs[0], outputs[1], desired_outputs[i]);
                 predictions[i] = findMaxClass(outputs);
-
-                //We use online learning, i.e. update the weights after every instance.
                 update_weights(delta_weights[0], delta_weights[1]);
             }
-
-            // Print new weights
-            //System.out.println("Hidden layer weights \n" + Arrays.deepToString(hidden_layer_weights));
-            //System.out.println("Output layer weights  \n" + Arrays.deepToString(output_layer_weights));
-           
-            double count = 0;            
-            for(int i = 0;i<instances.length;i++) {
-            	if(desired_outputs[i]==predictions[i]) {
-            		count++;
-            	}
-            }
-            double acc = count/instances.length;
-            System.out.println("acc = " + acc);
+            System.out.println(calcAccuracy(desired_outputs,predictions));
         }
     }
+    /**
+     * returns a double representing the percentage of predictions that were correct
+     * @param desired_outputs
+     * @param predictions
+     * @return
+     */
+    public double calcAccuracy(int[] desired_outputs, int[] predictions) {
+    	double count = 0;            
+        for(int i = 0;i<desired_outputs.length;i++) {
+        	if(desired_outputs[i]==predictions[i]) {
+        		count++;
+        	}
+        }
+        return count/desired_outputs.length;
+    }
+    
     /**
      * @param list of output node values
      * @return index of output node with the highest value
@@ -184,12 +179,8 @@ public class NeuralNetwork {
         for (int i = 0; i < instances.length; i++) {
             double[] instance = instances[i];
             double[][] outputs = forward_pass(instance);
-            System.out.println("Output Node values for first instance: " + Arrays.toString(outputs[1]));
             predictions[i] = findMaxClass(outputs);
         }     
-        System.out.println("Initial Hidden layer weights:\n" + Arrays.deepToString(hidden_layer_weights));
-        System.out.println("Initial Output layer weights:\n" + Arrays.deepToString(output_layer_weights));
-        
         return predictions;
     }
 
