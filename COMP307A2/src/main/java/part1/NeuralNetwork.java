@@ -1,6 +1,10 @@
 package part1;
 import java.util.Arrays;
 
+/**
+ * @author danma
+ *
+ */
 public class NeuralNetwork {
     public final double[][] hidden_layer_weights;
     public final double[][] output_layer_weights;
@@ -21,13 +25,19 @@ public class NeuralNetwork {
         this.learning_rate = learning_rate;
     }
 
-        //Calculate neuron activation for an input
+    /**
+     * @param input nodes output value
+     * @return	result of sigmoid activation function using input
+     */
     public double sigmoid(double input) { 
         double ePowZ = Math.exp(-input);
         return 1/(1+ePowZ);
     }
-
-    //Feed forward pass input to a network output
+    /**
+     * Uses the current NN weights to find the outputs of the given inputs
+     * @param inputs we want to find the output results for
+     * @return	hidden layer outputs + output layer outputs
+     */
     public double[][] forward_pass(double[] inputs) {
         double[] hidden_layer_outputs = new double[num_hidden];
         for (int i = 0; i < num_hidden; i++) {
@@ -49,35 +59,78 @@ public class NeuralNetwork {
         }
         return new double[][]{hidden_layer_outputs, output_layer_outputs};
     }
-
+    /**
+     * calculates beneficial weight changes for each weight in the NN
+     * 
+     * @param inputs
+     * @param hidden_layer_outputs
+     * @param output_layer_outputs
+     * @param desired_outputs
+     * @return
+     */
     public double[][][] backward_propagate_error(double[] inputs, double[] hidden_layer_outputs,
                                                  double[] output_layer_outputs, int desired_outputs) {
-
+    	
         double[] output_layer_betas = new double[num_outputs];
-        // TODO! Calculate output layer betas.
-        System.out.println("OL betas: " + Arrays.toString(output_layer_betas));
-
+        for(int i = 0; i<num_outputs;i++) {
+        	if(i==desired_outputs) {
+        		output_layer_betas[i] = 1-output_layer_outputs[i];
+        	}else {
+        		output_layer_betas[i] = 0-output_layer_outputs[i];
+        	}
+        }
+      //  System.out.println("OL betas: " + Arrays.toString(output_layer_betas));
+        
         double[] hidden_layer_betas = new double[num_hidden];
-        // TODO! Calculate hidden layer betas.
-        System.out.println("HL betas: " + Arrays.toString(hidden_layer_betas));
-
-        // This is a HxO array (H hidden nodes, O outputs)
+        for(int i = 0;i<num_hidden;i++) {
+        	double beta = 0.0;
+        	for(int j = 0;j<num_outputs;j++) {
+        		beta += output_layer_weights[i][j]*output_layer_outputs[j]*(1-output_layer_outputs[j])*output_layer_betas[j];
+        	}
+        	hidden_layer_betas[i] = beta;
+        }
+      //  System.out.println("HL betas: " + Arrays.toString(hidden_layer_betas));
+       
         double[][] delta_output_layer_weights = new double[num_hidden][num_outputs];
-        // TODO! Calculate output layer weight changes.
-
-        // This is a IxH array (I inputs, H hidden nodes)
+        for(int i = 0;i<num_hidden;i++) {
+        	for(int j = 0;j<num_outputs;j++) {
+        		delta_output_layer_weights[i][j] = this.learning_rate*hidden_layer_outputs[i]*output_layer_outputs[j]*(1 - output_layer_outputs[j])*output_layer_betas[j];
+        	}
+        }
+      
         double[][] delta_hidden_layer_weights = new double[num_inputs][num_hidden];
-        // TODO! Calculate hidden layer weight changes.
+        for(int i = 0;i<num_inputs;i++) {
+        	for(int j = 0;j<num_hidden;j++) {
+        		delta_hidden_layer_weights[i][j] = this.learning_rate*inputs[i]*hidden_layer_outputs[j]*(1 - hidden_layer_outputs[j])*hidden_layer_betas[j];
+        	}
+        }
 
-        // Return the weights we calculated, so they can be used to update all the weights.
         return new double[][][]{delta_output_layer_weights, delta_hidden_layer_weights};
     }
-
+    /**
+     * Updates our NN weights using the weight changes from the BP method
+     * @param delta_output_layer_weights
+     * @param delta_hidden_layer_weights
+     */
     public void update_weights(double[][] delta_output_layer_weights, double[][] delta_hidden_layer_weights) {
-        // TODO! Update the weights
-        System.out.println("Placeholder");
+    	
+    	for(int i = 0;i<num_inputs;i++) {
+    		for(int j = 0;j<num_hidden;j++) {
+    			this.hidden_layer_weights[i][j] += delta_hidden_layer_weights[i][j];
+    		}
+    	}
+    	for(int i = 0;i<num_hidden;i++) {
+    		for(int j = 0;j<num_outputs;j++) {
+    			this.output_layer_weights[i][j] += delta_output_layer_weights[i][j];
+    		}
+    	}
     }
-
+    /**
+     * Online learning training method using feedforward pass and backpropogation
+     * @param instances
+     * @param desired_outputs
+     * @param epochs
+     */
     public void train(double[][] instances, int[] desired_outputs, int epochs) {
         for (int epoch = 0; epoch < epochs; epoch++) {
             System.out.println("epoch = " + epoch);
@@ -86,40 +139,57 @@ public class NeuralNetwork {
                 double[] instance = instances[i];
                 double[][] outputs = forward_pass(instance);
                 double[][][] delta_weights = backward_propagate_error(instance, outputs[0], outputs[1], desired_outputs[i]);
-                int predicted_class = -1; //classes (0,1,2)
-                predictions[i] = predicted_class;
+                predictions[i] = findMaxClass(outputs);
 
                 //We use online learning, i.e. update the weights after every instance.
                 update_weights(delta_weights[0], delta_weights[1]);
             }
 
             // Print new weights
-            System.out.println("Hidden layer weights \n" + Arrays.deepToString(hidden_layer_weights));
-            System.out.println("Output layer weights  \n" + Arrays.deepToString(output_layer_weights));
-
-            // TODO: Print accuracy achieved over this epoch
-            double acc = Double.NaN;
+            //System.out.println("Hidden layer weights \n" + Arrays.deepToString(hidden_layer_weights));
+            //System.out.println("Output layer weights  \n" + Arrays.deepToString(output_layer_weights));
+           
+            double count = 0;            
+            for(int i = 0;i<instances.length;i++) {
+            	if(desired_outputs[i]==predictions[i]) {
+            		count++;
+            	}
+            }
+            double acc = count/instances.length;
             System.out.println("acc = " + acc);
         }
     }
-
+    /**
+     * @param list of output node values
+     * @return index of output node with the highest value
+     */
+    public int findMaxClass(double[][] outputs) {
+    	double max = Double.NEGATIVE_INFINITY;
+        int predicted_class = -1;
+        for(int j = 0;j<outputs[1].length;j++) {
+        	if(outputs[1][j]>max) {
+        		predicted_class = j;
+        		max = outputs[1][j];
+        	}
+        }
+        return predicted_class;
+    }
+    /**
+     * Predicts the class label of given instances using the NN without learning
+     * @param instances
+     * @return	list of predictions
+     */
     public int[] predict(double[][] instances) {
         int[] predictions = new int[instances.length];
         for (int i = 0; i < instances.length; i++) {
             double[] instance = instances[i];
             double[][] outputs = forward_pass(instance);
-            double max = Double.NEGATIVE_INFINITY;
-            int predicted_class = -1;
-            //Finds the max output node output and saves the index to be used to classify
-            for(int j = 0;j<outputs[1].length;j++) {
-            	System.out.println(outputs[1][j]);
-            	if(outputs[1][j]>max) {
-            		predicted_class = j;
-            		max = outputs[1][j];
-            	}
-            }
-            predictions[i] = predicted_class;
-        }
+            System.out.println("Output Node values for first instance: " + Arrays.toString(outputs[1]));
+            predictions[i] = findMaxClass(outputs);
+        }     
+        System.out.println("Initial Hidden layer weights:\n" + Arrays.deepToString(hidden_layer_weights));
+        System.out.println("Initial Output layer weights:\n" + Arrays.deepToString(output_layer_weights));
+        
         return predictions;
     }
 
