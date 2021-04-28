@@ -46,6 +46,7 @@ public class a2Part1 {
             instance1_predicted_label = label_encoder.inverse_transform(instance1_prediction[0]);
         }
         System.out.println("Predicted label for the first instance is: " + instance1_predicted_label);
+        System.out.println("Outputs: " + Arrays.deepToString(nn.forward_pass(instances[0])));
         System.out.println("\nStarting backprop on first instance");
         nn.train(new double[][]{instances[0]}, new int[] {integer_encoded[0]}, 1);       
         System.out.println("Hidden layer weights after 1 epoch on the first instance:\n" + Arrays.deepToString(nn.hidden_layer_weights));

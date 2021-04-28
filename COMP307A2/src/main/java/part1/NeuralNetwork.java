@@ -13,7 +13,6 @@ public class NeuralNetwork {
     private final double learning_rate;
 
     public NeuralNetwork(int num_inputs, int num_hidden, int num_outputs, double[][] initial_hidden_layer_weights, double[][] initial_output_layer_weights, double learning_rate) {
-        //Initialise the network
         this.num_inputs = num_inputs;
         this.num_hidden = num_hidden;
         this.num_outputs = num_outputs;
@@ -65,7 +64,7 @@ public class NeuralNetwork {
      * @param hidden_layer_outputs
      * @param output_layer_outputs
      * @param desired_outputs
-     * @return
+     * @return set of beneficial weight changes
      */
     public double[][][] backward_propagate_error(double[] inputs, double[] hidden_layer_outputs,
                                                  double[] output_layer_outputs, int desired_outputs) {
@@ -134,14 +133,14 @@ public class NeuralNetwork {
                 predictions[i] = findMaxClass(outputs);
                 update_weights(delta_weights[0], delta_weights[1]);
             }
-            System.out.printf("Accuracy: %,.2f%c on epoch %d%n", (100*calcAccuracy(desired_outputs,predictions)),'%',epoch);
+            System.out.printf("Accuracy: %,.2f%c on epoch %d%n", (100*calcAccuracy(desired_outputs,predictions)),'%',epoch+1);
         }
     }
     /**
      * returns a double representing the percentage of predictions that were correct
      * @param desired_outputs
      * @param predictions
-     * @return
+     * @return decimal number representing accuracy
      */
     public double calcAccuracy(int[] desired_outputs, int[] predictions) {
     	double count = 0;            
