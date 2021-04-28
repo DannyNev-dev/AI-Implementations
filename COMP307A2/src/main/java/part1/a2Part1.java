@@ -5,7 +5,8 @@ import java.util.List;
 
 public class a2Part1 {
 
-    public static void main(String[] _ignored) {
+    @SuppressWarnings("unused")
+	public static void main(String[] _ignored) {
         List<String[]> lines = Util.getLines("penguins307-train.csv");
         String[] header = lines.remove(0);
         String[] labels = Util.getLabels(lines);
@@ -37,11 +38,9 @@ public class a2Part1 {
         System.out.printf("First instance has label %s, which is %d as an integer, and %s as a list of outputs.\n",
                 labels[0], integer_encoded[0], Arrays.toString(onehot_encoded[0]));
 
-        // need to wrap it into a 2D array
         int[] instance1_prediction = nn.predict(new double[][]{instances[0]});
         String instance1_predicted_label;
         if (instance1_prediction[0] == -1) {
-            // This should never happen once you have implemented the feedforward.
             instance1_predicted_label = "???";
         } else {
             instance1_predicted_label = label_encoder.inverse_transform(instance1_prediction[0]);
@@ -59,14 +58,13 @@ public class a2Part1 {
         System.out.println("Output layer weights:\n" + Arrays.deepToString(nn.output_layer_weights));
 
         List<String[]> lines_test = Util.getLines("penguins307-test.csv");
-        String[] header_test = lines_test.remove(0);
+		String[] header_test = lines_test.remove(0);
         String[] labels_test = Util.getLabels(lines_test);
         double[][] instances_test = Util.getData(lines_test);
 
-        // scale the test according to our training data.
         rescaler.rescaleData(instances_test);
-
-        // TODO: Compute and print the test accuracy
+        System.out.println("\nAccuracy on the test set using trained weights");
+        System.out.printf("%,.2f%c%n",100*nn.calcAccuracy(label_encoder.intEncode(labels_test), nn.predict(instances_test)),'%');
         System.out.println("Finished!");
     }
 
