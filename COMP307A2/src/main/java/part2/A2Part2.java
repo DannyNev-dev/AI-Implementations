@@ -38,7 +38,11 @@ public class A2Part2 {
 			this.y[i] = scan.nextDouble();
 		}
 	}
-	
+	/**
+	 * A method that sets up a GPConfiguration
+	 * @return A GPConfiguration object that is configured
+	 * @throws InvalidConfigurationException
+	 */
 	public GPConfiguration setupConfig() throws InvalidConfigurationException {
 		GPConfiguration newConfig = new GPConfiguration();
 			newConfig.setCrossoverProb(0.9f);
@@ -47,12 +51,16 @@ public class A2Part2 {
 			newConfig.setPopulationSize(1000);
 			newConfig.setFitnessFunction(new FitnessFunction(this));
 			newConfig.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
-			newConfig.setMaxCrossoverDepth(8);
+			newConfig.setMaxCrossoverDepth(17);
 			newConfig.setMaxInitDepth(4);
 			newConfig.setStrictProgramCreation(true);
 		return newConfig;
 	}
-	
+	/**
+	 * This method creates our problem and evolves MAX_EVOLUTION times 
+	 * then outputs the best solution/formula
+	 * @throws InvalidConfigurationException
+	 */
 	public void evolveFormula() throws InvalidConfigurationException {
 		GPGenotype gp = this.problem.create();
 		gp.setVerboseOutput(true);

@@ -3,6 +3,10 @@ package part2;
 import org.jgap.gp.GPFitnessFunction;
 import org.jgap.gp.IGPProgram;
 
+/**
+ * @author danma
+ *
+ */
 public class FitnessFunction extends GPFitnessFunction {
 
 	private static final long serialVersionUID = -6232688679641087425L;
@@ -14,6 +18,10 @@ public class FitnessFunction extends GPFitnessFunction {
 		this.mainClass = mainClass;
 	}
 	
+	/**
+	 * Custom evaluate method that used the x data from main to determine the error and
+	 * return a double repressenting the current formulas fitness (Lower is better)
+	 */
 	@Override
 	protected double evaluate(IGPProgram a_subject) {
 		double errTotal = 0.0;

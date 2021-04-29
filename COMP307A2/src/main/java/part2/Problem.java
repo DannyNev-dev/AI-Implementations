@@ -18,13 +18,17 @@ public class Problem extends GPProblem{
 		this.config = config;
 		this.variable = variable;
 	}
-	
+	/**
+	 * Custom create method that initializes the terminal and function sets
+	 * TerminalSet: {X,Const}
+	 * FunctionSet: {*,/,+,-,^,}
+	 */
 	@Override
 	public GPGenotype create() throws InvalidConfigurationException {
 		CommandGene[][] nodeSets = { { 
-				variable,	//x 
-				new Terminal(this.config, CommandGene.DoubleClass, 2.0d, 10.0d, true), //const
-				new Pow(this.config, CommandGene.DoubleClass),	//functions
+				variable,	
+				new Terminal(this.config, CommandGene.DoubleClass, 2.0d, 10.0d, true),
+				new Pow(this.config, CommandGene.DoubleClass),	
 				new Multiply(this.config, CommandGene.DoubleClass), 
 				new Add(this.config, CommandGene.DoubleClass),
 				new Divide(this.config, CommandGene.DoubleClass), 
