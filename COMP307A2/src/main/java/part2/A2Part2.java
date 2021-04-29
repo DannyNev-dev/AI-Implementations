@@ -64,8 +64,13 @@ public class A2Part2 {
 	public void evolveFormula() throws InvalidConfigurationException {
 		GPGenotype gp = this.problem.create();
 		gp.setVerboseOutput(true);
-		gp.evolve(A2Part2.MAX_EVOLUTIONS);
+		double bestSolution = 100.0;
+		while(bestSolution!=0) {
+			gp.evolve(A2Part2.MAX_EVOLUTIONS);
+			bestSolution = gp.getAllTimeBest().getFitnessValue();
+		}
 		gp.outputSolution(gp.getAllTimeBest());
+		
 	}
 	
 	
