@@ -13,7 +13,7 @@ public class Problem extends GPProblem{
 	private GPConfiguration config;
 	private Variable variable;
 	
-	public Problem( GPConfiguration config, Variable variable) throws InvalidConfigurationException {
+	public Problem(GPConfiguration config, Variable variable) throws InvalidConfigurationException {
 		super(config);
 		this.config = config;
 		this.variable = variable;
@@ -27,7 +27,7 @@ public class Problem extends GPProblem{
 	public GPGenotype create() throws InvalidConfigurationException {
 		CommandGene[][] nodeSets = { { 
 				variable,	
-				new Terminal(this.config, CommandGene.DoubleClass, 2.0d, 10.0d, true),
+				new Terminal(this.config, CommandGene.DoubleClass, 2.0, 10.0, true),
 				new Pow(this.config, CommandGene.DoubleClass),	
 				new Multiply(this.config, CommandGene.DoubleClass), 
 				new Add(this.config, CommandGene.DoubleClass),

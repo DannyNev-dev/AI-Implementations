@@ -22,6 +22,7 @@ public class A2Part2 {
 	
 	public static final int INPUT_SIZE = 20;
 	private static final int MAX_EVOLUTIONS = 100;
+	private static final int maxIterations = 10;
 	
 	private GPConfiguration config;
 	private Problem problem;
@@ -51,7 +52,7 @@ public class A2Part2 {
 			newConfig.setPopulationSize(1000);
 			newConfig.setFitnessFunction(new FitnessFunction(this));
 			newConfig.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
-			newConfig.setMaxCrossoverDepth(17);
+			newConfig.setMaxCrossoverDepth(8);
 			newConfig.setMaxInitDepth(4);
 			newConfig.setStrictProgramCreation(true);
 		return newConfig;
@@ -65,7 +66,9 @@ public class A2Part2 {
 		GPGenotype gp = this.problem.create();
 		gp.setVerboseOutput(true);
 		double bestSolution = 100.0;
-		while(bestSolution!=0) {
+		int count = 0;
+		while(bestSolution!=0 && count<A2Part2.maxIterations) {
+			count++;
 			gp.evolve(A2Part2.MAX_EVOLUTIONS);
 			bestSolution = gp.getAllTimeBest().getFitnessValue();
 		}

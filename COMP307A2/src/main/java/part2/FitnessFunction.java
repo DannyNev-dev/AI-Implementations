@@ -25,7 +25,7 @@ public class FitnessFunction extends GPFitnessFunction {
 	@Override
 	protected double evaluate(IGPProgram a_subject) {
 		double errTotal = 0.0;
-		for(int i = 0;i<20;i++) {
+		for(int i = 0;i<A2Part2.INPUT_SIZE;i++) {
 			this.mainClass.variable.set(this.mainClass.x[i]);
 			double result = a_subject.execute_double(0, this.empty);
 			errTotal += Math.abs(result - this.mainClass.y[i]);
